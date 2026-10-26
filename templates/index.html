@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FlightScope: arrivals and departures for Swedavia's ten Swedish airports, built with Flask and the Swedavia FlightInfo API v2.">
+  <meta name="color-scheme" content="dark light">
+  <title>FlightScope | Swedish Airport Flight Information</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-live-configured="{{ 'true' if live_configured else 'false' }}" data-today="{{ today }}">
+  <a class="skip-link" href="#board">Skip to flight list</a>
+
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="/" aria-label="FlightScope home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>
+        </span>
+        <span>Flight<strong>Scope</strong></span>
+      </a>
+      <div class="topbar-actions">
+        <span id="modeBadge" class="mode-badge demo"><span class="dot" aria-hidden="true"></span><span id="modeBadgeText">Demo data</span></span>
+        <button id="themeToggle" class="icon-button" type="button" aria-label="Switch to light theme" title="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5 8.5 8.5 0 1 0 20.5 14.6z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" aria-labelledby="pageTitle">
+      <p class="eyebrow">Swedavia airports · Live &amp; demo flight information</p>
+      <h1 id="pageTitle">Every flight across Sweden, <span class="accent">at a glance.</span></h1>
+      <p class="intro">Pick one of Sweden's ten Swedavia airports to see departures or arrivals, then search or filter by status.</p>
+    </section>
+
+    <form id="controls" class="card controls" aria-label="Choose airport, flight type, date and data source">
+      <div class="field field-airport">
+        <label for="airport">Airport</label>
+        <select id="airport" name="airport">
+          {% for code, name in airports.items() %}<option value="{{ code }}">{{ name }} ({{ code }})</option>{% endfor %}
+        </select>
+      </div>
+
+      <fieldset class="field segmented-field">
+        <legend>Flight type</legend>
+        <div class="segmented">
+          <input type="radio" id="dirDep" name="direction" value="departures" checked>
+          <label for="dirDep"><span aria-hidden="true">↗</span> Departures</label>
+          <input type="radio" id="dirArr" name="direction" value="arrivals">
+          <label for="dirArr"><span aria-hidden="true">↘</span> Arrivals</label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="flightDate">Date</label>
+        <input type="date" id="flightDate" name="date" value="{{ today }}" min="{{ min_date }}" max="{{ max_date }}" required>
+      </div>
+
+      <fieldset class="field segmented-field">
+        <legend>Data source</legend>
+        <div class="segmented">
+          <input type="radio" id="modeDemo" name="mode" value="demo" checked>
+          <label for="modeDemo">Demo</label>
+          <input type="radio" id="modeLive" name="mode" value="live" aria-describedby="liveHint">
+          <label for="modeLive">Live API</label>
+        </div>
+      </fieldset>
+
+      <button id="refresh" class="primary" type="submit">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>
+        <span>Refresh</span>
+      </button>
+      <p id="liveHint" class="hint">{% if live_configured %}API key detected on the server. Live mode is available.{% else %}No API key configured. Live mode will show a setup message. See README.{% endif %}</p>
+    </form>
+
+    <section class="stats" aria-label="Flight summary">
+      <div class="stat"><span class="stat-label">Flights</span><strong id="statTotal">—</strong><span class="stat-note">For the selected day</span></div>
+      <div class="stat stat-ok"><span class="stat-label">On time</span><strong id="statOnTime">—</strong><span class="stat-note">Less than 15 min late</span></div>
+      <div class="stat stat-warn"><span class="stat-label">Delayed</span><strong id="statDelayed">—</strong><span class="stat-note">15 min or more, all day</span></div>
+      <div class="stat stat-bad"><span class="stat-label">Cancelled / diverted</span><strong id="statDisrupted">—</strong><span class="stat-note">Disrupted flights</span></div>
+      <div class="stat"><span class="stat-label">Last updated</span><strong id="statUpdated">—</strong><span class="stat-note">Swedish time</span></div>
+    </section>
+
+    <section id="board" class="card board" aria-labelledby="boardTitle" tabindex="-1">
+      <div class="board-head">
+        <div>
+          <h2 id="boardTitle">Departures <span class="muted" id="boardAirport">Stockholm Arlanda</span></h2>
+          <p class="board-sub" id="boardDate"></p>
+        </div>
+        <div class="search">
+          <label for="search" class="sr-only">Search by flight, airline, city or gate</label>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="search" type="search" placeholder="Search flight, airline, city or gate" autocomplete="off" spellcheck="false">
+          <kbd aria-hidden="true">/</kbd>
+        </div>
+      </div>
+
+      <div id="demoBanner" class="banner" role="note">
+        <strong>Demo mode.</strong> These flights are generated examples, not real flight information.
+      </div>
+
+      <div class="chips" role="group" aria-label="Filter by status" id="chips">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">All <span class="count" data-count="all">0</span></button>
+        <button type="button" class="chip" data-filter="on-time" aria-pressed="false">Scheduled <span class="count" data-count="on-time">0</span></button>
+        <button type="button" class="chip" data-filter="delayed" aria-pressed="false">Delayed <span class="count" data-count="delayed">0</span></button>
+        <button type="button" class="chip" data-filter="boarding" aria-pressed="false" id="chipBoarding">Boarding <span class="count" data-count="boarding">0</span></button>
+        <button type="button" class="chip" data-filter="completed" aria-pressed="false"><span id="completedLabel">Departed</span> <span class="count" data-count="completed">0</span></button>
+        <button type="button" class="chip" data-filter="disrupted" aria-pressed="false">Cancelled <span class="count" data-count="disrupted">0</span></button>
+      </div>
+
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <div class="table-wrap">
+        <table id="flightTable" aria-describedby="resultCount">
+          <caption class="sr-only" id="tableCaption">Departures</caption>
+          <thead>
+            <tr>
+              <th scope="col">Time</th>
+              <th scope="col">Flight</th>
+              <th scope="col" id="cityHead">Destination</th>
+              <th scope="col">Airline</th>
+              <th scope="col">Terminal / Gate</th>
+              <th scope="col" id="extraHead">Check-in</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="board-foot">
+        <span id="resultCount">0 flights shown</span>
+        <span>Times in Swedish local time (Europe/Stockholm) · Auto-refresh every 2 min</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell footer">
+    <span><strong>FlightScope</strong> · Student portfolio project built with Python, Flask &amp; JavaScript</span>
+    <span>Unofficial. Not affiliated with Swedavia. Live data: <a href="https://apideveloper.swedavia.se/" rel="noopener noreferrer" target="_blank">Swedavia FlightInfo API v2</a></span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

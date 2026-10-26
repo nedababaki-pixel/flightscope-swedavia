@@ -1,0 +1,5 @@
+Flask>=3.1,<4
+requests>=2.32,<3
+python-dotenv>=1.0,<2
+# Windows has no built-in IANA time-zone database; needed for Europe/Stockholm.
+tzdata>=2024.1
