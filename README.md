@@ -13,7 +13,7 @@ A responsive flight information dashboard for Swedavia's ten Swedish airports, b
 | <img src="docs/screenshots/10-status-and-delays.png" alt="Flight statuses" width="300"> | <img src="docs/screenshots/09-search-sk123.png" alt="Search for SK123" width="300"> | <img src="docs/screenshots/15-mobile.jpg" alt="Phone layout" width="140"> |
 | Crossed-out old times, new times and coloured statuses | Searching for SK123 shows one flight | On a phone, the table becomes cards |
 
-More screenshots, with captions, are in [DOCUMENTATION.md](DOCUMENTATION.md).
+More screenshots, with captions, are in [DOCUMENTATION.md](DOCUMENTATION.md) (also available as a [PDF](docs/FlightScope_Documentation.pdf)).
 
 ## Features
 
