@@ -128,4 +128,4 @@ docs/                 GitHub guide, screenshot checklist, video script
 
 ## Credits
 
-Flight data © Swedavia, through the public FlightInfo API. Built by Neda Babaki as part of an IT education assignment.
+Flight data © Swedavia, through the public FlightInfo API. Built by Saiedeh Babaki as part of an IT education assignment.

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Assignment** | APL project 2026, Task 4: *Reverse Engineer a Result* |
-| **Student** | Neda Babaki |
+| **Student** | Saiedeh Babaki |
 | **Teacher** | Najmaddin |
 | **Date** | October 2026 |
 | **GitHub** | <https://github.com/nedababaki-pixel/flightscope-swedavia> |

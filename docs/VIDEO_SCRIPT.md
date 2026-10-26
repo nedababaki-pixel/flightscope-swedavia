@@ -40,9 +40,9 @@ Clipchamp is free and already installed on Windows 11 (Start menu → "Clipchamp
 
 ## Scene 1: Introduction (0:00–0:25)
 
-**Visual:** `07-dashboard-dark.png`. Add the title text "FlightScope – Neda Babaki".
+**Visual:** `07-dashboard-dark.png`. Add the title text "FlightScope – Saiedeh Babaki".
 
-> Hi, my name is Neda Babaki. This is FlightScope, my project for the reverse engineering assignment. FlightScope is a web application that shows departures and arrivals for Swedavia's ten Swedish airports. I built it with Python and Flask for the backend, and HTML, CSS and JavaScript for the web page.
+> Hi, my name is Saiedeh Babaki. This is FlightScope, my project for the reverse engineering assignment. FlightScope is a web application that shows departures and arrivals for Swedavia's ten Swedish airports. I built it with Python and Flask for the backend, and HTML, CSS and JavaScript for the web page.
 
 ## Scene 2: Research (0:25–1:20)
 
