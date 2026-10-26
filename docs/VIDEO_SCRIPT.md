@@ -1,52 +1,110 @@
-# Demonstration video script (about 4:30)
+# Demonstration video: scene guide and narration
 
-**Setup before recording**
+**Length:** about 4 minutes 45 seconds (about 630 spoken words at a calm speed)
+**Format:** screen recording with your voice. Use English throughout.
 
-- Start the app (`python app.py`) and open http://127.0.0.1:5055 in a clean browser window at 100 % zoom.
-- Open VS Code with the project. Close `.env`, e-mail, chats and notifications (Windows: Focus assist on).
-- Have a terminal ready for the tests.
-- Recording tool: **Win + Alt + R** (Xbox Game Bar) or OBS Studio. Speak slowly and clearly.
+## Before you record
 
----
+1. Start the app with `run.bat` and open <http://127.0.0.1:5055>. Set the browser zoom to 100 %.
+2. Open VS Code with the project folder. **Close `.env` if it exists.** Do not show any API key.
+3. Close your email, chat apps and other browser tabs. Turn on **Focus assist / Do not disturb** in Windows.
+4. Have the screenshots `01`, `02` and `03` ready (see `SCREENSHOT_CHECKLIST.md`). You can show them in the Windows Photos app or as browser tabs.
+5. Choose a recording tool: **Win + Alt + R** (Xbox Game Bar, records one window) or **OBS Studio** (records the whole screen).
+6. Do one practice run. Demo flights depend on the date, so check which flight number you will search for (scene 4).
 
-### 0:00–0:30 Introduction *(screen: dashboard, dark theme)*
-
-> "Hi, my name is Neda. In this video I present FlightScope, a flight information dashboard for Sweden's ten Swedavia airports. The assignment was to reverse engineer a Swedavia FlightInfo application from a sample video: study what it does from the outside, then build my own working version. I built it with Python and Flask on the backend, and plain HTML, CSS and JavaScript on the frontend."
-
-### 0:30–1:15 Research *(screen: developer portal / API PDF, then the 401 screenshot)*
-
-> "First I analysed the sample. The inputs are an airport, departures or arrivals, and a date. The outputs are flights with times, destinations, gates and status.
-> My first idea was to request the Swedavia website directly from Python, but the server answered HTTP 403 Forbidden. The website is not meant to be read by scripts. So I found Swedavia's official developer portal and the FlightInfo API version 2. From the official documentation I learned the endpoint format, that a subscription key must be sent in a header, that all times are in UTC, and exactly which fields hold the status and the gate. A request without a key returns 401, which confirms that the endpoint exists and needs authentication."
-
-### 1:15–2:10 Implementation *(screen: VS Code, show files one by one)*
-
-> "Here is the project structure. `app.py` is the Flask server. It validates every input against an allow-list, adds security headers, and returns JSON.
-> `swedavia_client.py` talks to the real API. It sends the key from a private `.env` file, so the key stays on the server and never reaches the browser. It handles timeouts and errors, and converts the API response into a simple format, including converting UTC times to Swedish time.
-> Because I don't have an API key yet, I built a demo mode. `demo_data.py` generates example flights in exactly the same format as the real API, so demo mode actually tests the same parsing code. Demo flights are clearly labelled as not real.
-> The frontend is one HTML page, a stylesheet with dark and light themes, and a JavaScript file that loads, searches and filters the flights."
-
-### 2:10–3:20 Live demonstration *(screen: browser)*
-
-> "Now the app itself. Note the yellow banner: this is demo mode, so these flights are generated examples, not real flights." *(point at banner)*
-> "I can choose any of the ten airports. Let's take Göteborg Landvetter… and switch to arrivals. The column now says 'From', and instead of check-in desks it shows the baggage belt." *(do it)*
-> "Search works instantly. If I type 'copen', only Copenhagen flights remain." *(type, then Esc)*
-> "These filter buttons show how many flights have each status. Here are the delayed flights: the old time is crossed out and the new time is highlighted." *(click Delayed)*
-> "If I select Live API without a key, the app doesn't crash. It explains what to do." *(click Live API, then back to Demo)*
-> "There is also a light theme, and on a phone the table turns into cards." *(toggle theme; F12 device toolbar → phone size)*
-
-### 3:20–4:05 Testing and problems *(screen: terminal running tests, then DOCUMENTATION.md table)*
-
-> "I wrote 28 automated tests. They cover input validation, the API field mapping, time-zone conversion, every status, demo mode for all airports, and live-mode errors like a rejected key, a timeout or invalid JSON. They use a fake HTTP connection, so they run without internet or a key." *(run `python -m unittest discover -s tests -v`, show OK)*
-> "Some real problems I solved: the 403 from the website; my first parser read status and gate from the wrong fields, which I found by checking against the official documentation; and on Windows the app crashed because Python had no time-zone data, which I fixed by adding the tzdata package."
-
-### 4:05–4:35 Conclusion *(screen: GitHub repo or README)*
-
-> "The project is on GitHub with a README and full documentation. I learned how to research and use an official API, keep secrets safe, handle errors, test code without a network, and build an accessible, responsive interface. My next step is to test live mode with my own subscription key. Thank you for watching."
+**Tip:** read the narration slowly. Pausing is fine, and short silences while you click are normal.
 
 ---
 
-**Honesty rules for the recording**
+## Scene 1: Introduction (0:00–0:25)
 
-- Do **not** say that live mode works with real data unless you have tested it with your own key.
-- Do **not** show `.env` or any key.
-- If your timings run short, show the code in more detail during 1:15–2:10. You need at least 4 minutes.
+**Show:** the FlightScope dashboard in dark mode (Stockholm Arlanda, Departures). Slowly scroll from the top to the flight table.
+
+**Say:**
+> "Hi, my name is Neda Babaki. This is FlightScope, my project for the reverse engineering assignment. FlightScope is a web application that shows departures and arrivals for Swedavia's ten Swedish airports. I built it with Python and Flask for the backend, and HTML, CSS and JavaScript for the web page."
+
+## Scene 2: Research (0:25–1:15)
+
+**Show:** screenshot `02-website-403.png` → screenshot `01-api-docs.png` → screenshot `03-api-401.png`.
+
+**Say:**
+> "I started by looking at the sample video. The user chooses an airport, departures or arrivals, and a date. The application then shows flights with times, destinations, gates and status.
+>
+> First I tried to download the Swedavia website with Python, but the server answered 403 Forbidden. The website does not allow scripts, so I needed another data source.
+>
+> I found Swedavia's developer portal and the official FlightInfo API, version 2. I read the documentation and learned the API address, that a subscription key must be sent in a header, and that all times are in UTC.
+>
+> When I call the API without a key, it answers 401. That shows the address is correct, but a key is needed. I don't have a key yet, so I also built a demo mode."
+
+## Scene 3: Implementation (1:15–2:05)
+
+**Show:** VS Code. Click through the files in this order: `app.py` → `swedavia_client.py` (scroll to `normalize_flight`) → `demo_data.py` → `templates/index.html` → `static/app.js`. End with the terminal showing "FlightScope running…" (or screenshot `06-server-running.png`).
+
+**Say:**
+> "Here is the project in VS Code. `app.py` is the Flask server. It checks all input, for example that the airport is one of the ten real airport codes, and it returns the flights as JSON.
+>
+> `swedavia_client.py` talks to the real API. It reads the key from a private `.env` file, so the key stays on the server and is never sent to the browser or uploaded to GitHub. It also converts the flight data and changes UTC times to Swedish time.
+>
+> `demo_data.py` creates example flights in exactly the same format as the real API. So demo mode uses the same code as live mode.
+>
+> The web page is one HTML file, one CSS file and one JavaScript file. JavaScript loads the flights and handles search and filters."
+
+## Scene 4: Live demonstration, part 1 (2:05–3:05)
+
+**Show and do (in the browser):**
+1. Point at the yellow **Demo mode** banner.
+2. Change the airport to **Göteborg Landvetter**.
+3. Click **Arrivals**. Point at the "From" and "Baggage" columns.
+4. Change the airport to **Kiruna**. Type a flight number in the search box (**SK123** if you record on 26 October 2026; otherwise any flight number you see). Show the single result.
+5. Press **Esc** to clear the search.
+
+**Say:**
+> "Now I will show the application. First, notice the yellow banner. This is demo mode, so these flights are generated examples, not real flights.
+>
+> I can choose any of the ten airports. I'll choose Göteborg Landvetter and switch to arrivals. The column now says 'From', and instead of check-in desks it shows the baggage belt.
+>
+> The search works immediately. If I type a flight number, only that flight is shown. I can also search for an airline, a city or a gate. Escape clears the search."
+
+## Scene 5: Live demonstration, part 2 (3:05–3:50)
+
+**Show and do:**
+1. Click the **Delayed** filter. Point at a crossed-out time and the new time.
+2. Click **All** again.
+3. Click **Live API**. Show the red message. Click **Demo** again.
+4. Click the **theme button** (top right) to show the light theme, then switch back.
+5. Optional: press **F12**, turn on the phone view, and show the cards. Close DevTools.
+
+**Say:**
+> "These buttons filter the flights by status, and each one shows how many flights there are. Here are the delayed flights. The old time is crossed out and the new time is shown.
+>
+> If I choose Live API without a key, the application does not crash. It explains that a key is needed. Live mode has not been tested with real data yet, because I don't have a key.
+>
+> There is also a light theme, and on a phone the table changes into cards."
+
+## Scene 6: Testing and problems (3:50–4:25)
+
+**Show:** the VS Code terminal. Run `python -m unittest discover -s tests -v` and scroll to **"Ran 28 tests … OK"**. Then show the problems table in `DOCUMENTATION.md` (section 5).
+
+**Say:**
+> "I have 28 automated tests. They test input checks, time conversion, demo mode for all airports, and error handling in live mode with fake API answers. All tests pass; one is skipped because it only runs with a real key.
+>
+> Some problems I solved were the 403 from the website, data fields that were read from the wrong place, and a crash on Windows because the time-zone data was missing. I fixed that by adding the tzdata package."
+
+## Scene 7: GitHub and conclusion (4:25–4:50)
+
+**Show:** the GitHub repository page: <https://github.com/nedababaki-pixel/flightscope-swedavia>. Scroll down to the README.
+
+**Say:**
+> "The project is published on GitHub with a README and documentation. I made sure no API keys or personal email addresses are included.
+>
+> In this project I learned how to use official API documentation, keep secrets safe, handle errors and write tests. My next step is to get an API key and test live mode with real flight data. Thank you for watching."
+
+---
+
+## Checklist after recording
+
+- [ ] The video is **at least 4 minutes** long (aim for 4:30–5:00)
+- [ ] The sound is clear and not too quiet
+- [ ] No API key, `.env` file, personal email or private notifications are visible
+- [ ] You never say that Live mode works with real data
+- [ ] The Demo mode banner is visible when you show flights

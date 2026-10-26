@@ -4,9 +4,9 @@ A responsive flight information dashboard for Swedavia's ten Swedish airports, b
 
 > **Unofficial project.** Not affiliated with or endorsed by Swedavia. Demo mode shows generated example flights that are clearly labelled and are not real flight information.
 
-<!-- Add screenshots after recording them (see docs/SCREENSHOT_CHECKLIST.md):
-![Dashboard, dark theme](docs/screenshots/dashboard-dark.png)
-![Mobile layout](docs/screenshots/mobile.png)
+<!-- Remove this line and the closing line below after adding the screenshots (see docs/SCREENSHOT_CHECKLIST.md)
+![FlightScope dashboard, dark theme](docs/screenshots/07-dashboard-dark.png)
+![FlightScope on a phone](docs/screenshots/15-mobile.png)
 -->
 
 ## Features
