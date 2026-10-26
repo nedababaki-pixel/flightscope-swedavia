@@ -12,10 +12,10 @@ Status on 26 October 2026. All screenshots are in `docs/screenshots/`.
 |---|---|---|
 | Research | DOCUMENTATION.md §2, Figures 1–3 | ✅ Done |
 | Implementation | DOCUMENTATION.md §3, Figures 4–7, source code | ✅ Done |
-| Completion and testing | DOCUMENTATION.md §4, Figures 8–15, 28 automated tests | ⚠️ Add the test screenshot (`12-tests-ok.png`) |
+| Completion and testing | DOCUMENTATION.md §4, Figures 8–16, 28 automated tests | ✅ Done |
 | Problems and solutions | DOCUMENTATION.md §5 | ✅ Done |
 | Conclusion | DOCUMENTATION.md §6 | ✅ Done |
-| Published on GitHub | <https://github.com/nedababaki-pixel/flightscope-swedavia>, Figures 16–17 | ✅ Done (the latest documentation changes still need to be pushed) |
+| Published on GitHub | <https://github.com/nedababaki-pixel/flightscope-swedavia>, Figures 17–18 | ✅ Done |
 | Video, at least 4 minutes, in English | `docs/VIDEO_SCRIPT.md` (storyboard and narration) | ❌ Still to record |
 | Everything in English | All documents | ✅ Done |
 | Honest about Live API | README, DOCUMENTATION.md §4.1, §4.2, video script | ✅ Clearly says it is not tested with a real key |
@@ -32,27 +32,17 @@ Status on 26 October 2026. All screenshots are in `docs/screenshots/`.
 | ✅ | `03-api-401.jpg` | FlightInfo API without a key returns 401 | AI | Figure 3, Video scene 2 |
 | ✅ | `05-code-client.jpg` | `normalize_flight` code and project file list (GitHub view) | AI | Figure 6 |
 | ✅ | `06-server-running.png` | `run.bat` running the server | Me | Figure 7, Video scene 3 |
-| ✅ | `07-dashboard-dark.png` | Dashboard, dark mode | Me | Figure 8, README, Video scene 1 |
-| ✅ | `08-arrivals.png` | Luleå arrivals with baggage belt, codeshares and a cancellation | Me | Figure 10 |
-| ✅ | `09-search-sk123.png` | Manual test: search SK123 → 1 result | Me | Figure 11, README |
-| ✅ | `10-status-and-delays.png` | Statuses, crossed-out times, "Delayed 20 min" | Me | Figure 12, README |
-| ✅ | `11-live-no-key.jpg` | Live API without a key → friendly error message | AI | Figure 13 |
-| ✅ | `13-github-repo.jpg` | Public GitHub repository | AI | Figure 16, Video scene 7 |
-| ✅ | `14-dashboard-light.png` | Dashboard, light theme | Me | Figure 9 |
-| ✅ | `15-mobile.jpg` | Phone layout (375 px), table as cards | AI | Figure 14, README |
-| ✅ | `16-invalid-input.jpg` | `airport=XXX` → JSON error "Unknown airport" | AI | Figure 15 |
-| ✅ | `17-gitignore.jpg` | `.gitignore` excludes `.env`, `.venv` and temporary files | AI | Figure 17 |
-| ❌ | `12-tests-ok.png` | Terminal showing `Ran 28 tests … OK (skipped=1)` | **Me (missing)** | Figure 18 (placeholder) |
-
-### How to take the missing screenshot (`12-tests-ok.png`)
-
-1. In the VS Code terminal, in the project folder, run:
-   ```powershell
-   python -m unittest discover -s tests -v
-   ```
-2. Scroll so the last lines show **"Ran 28 tests"** and **"OK (skipped=1)"**.
-3. Press **Win + Shift + S**, select the terminal, and save the image as `docs/screenshots/12-tests-ok.png`.
-4. In `DOCUMENTATION.md` (section 4.1), delete the `<!-- TODO` line and the closing `-->` around the image.
+| ✅ | `07-dashboard-dark.png` | Dashboard, dark mode | Me | Figure 9, README, Video scene 1 |
+| ✅ | `08-arrivals.png` | Luleå arrivals with baggage belt, codeshares and a cancellation | Me | Figure 11 |
+| ✅ | `09-search-sk123.png` | Manual test: search SK123 → 1 result | Me | Figure 12, README |
+| ✅ | `10-status-and-delays.png` | Statuses, crossed-out times, "Delayed 20 min" | Me | Figure 13, README |
+| ✅ | `11-live-no-key.jpg` | Live API without a key → friendly error message | AI | Figure 14 |
+| ✅ | `13-github-repo.jpg` | Public GitHub repository | AI | Figure 17, Video scene 7 |
+| ✅ | `14-dashboard-light.png` | Dashboard, light theme | Me | Figure 10 |
+| ✅ | `15-mobile.jpg` | Phone layout (375 px), table as cards | AI | Figure 15, README |
+| ✅ | `16-invalid-input.jpg` | `airport=XXX` → JSON error "Unknown airport" | AI | Figure 16 |
+| ✅ | `17-gitignore.jpg` | `.gitignore` excludes `.env`, `.venv` and temporary files | AI | Figure 18 |
+| ✅ | `12-tests-ok.png` | Terminal showing `Ran 28 tests … OK (skipped=1)` | Me | Figure 8, Video scene 6 |
 
 ### Not used on purpose
 
