@@ -25,9 +25,9 @@ Install Git from <https://git-scm.com/download/win> if `git --version` does not 
 
 ```powershell
 git config --global user.name "Your Name"
-# Use your private GitHub noreply address (Settings → Emails), not your personal e-mail
-git config --global user.email "<id>+<username>@users.noreply.github.com"
 ```
+
+For the commit email, use the private **noreply address** that GitHub shows under **Settings → Emails** (with "Keep my email addresses private" turned on), not your personal e-mail. Copy it from that page and set it with `git config user.email` inside the project folder.
 
 ## 3. Create the local repository
 
