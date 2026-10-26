@@ -4,10 +4,16 @@ A responsive flight information dashboard for Swedavia's ten Swedish airports, b
 
 > **Unofficial project.** Not affiliated with or endorsed by Swedavia. Demo mode shows generated example flights that are clearly labelled and are not real flight information.
 
-<!-- Remove this line and the closing line below after adding the screenshots (see docs/SCREENSHOT_CHECKLIST.md)
-![FlightScope dashboard, dark theme](docs/screenshots/07-dashboard-dark.png)
-![FlightScope on a phone](docs/screenshots/15-mobile.png)
--->
+<img src="docs/screenshots/07-dashboard-dark.png" alt="FlightScope dashboard in dark mode" width="820">
+
+*The dashboard in dark mode (Demo data, Stockholm Arlanda arrivals).*
+
+| Flight table with statuses | Search | Phone layout |
+|---|---|---|
+| <img src="docs/screenshots/10-status-and-delays.png" alt="Flight statuses" width="300"> | <img src="docs/screenshots/09-search-sk123.png" alt="Search for SK123" width="300"> | <img src="docs/screenshots/15-mobile.jpg" alt="Phone layout" width="140"> |
+| Crossed-out old times, new times and coloured statuses | Searching for SK123 shows one flight | On a phone, the table becomes cards |
+
+More screenshots, with captions, are in [DOCUMENTATION.md](DOCUMENTATION.md).
 
 ## Features
 
