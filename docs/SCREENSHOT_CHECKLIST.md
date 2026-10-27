@@ -1,6 +1,6 @@
 # Evidence and submission checklist
 
-Status on 26 October 2026. All screenshots are in `docs/screenshots/`.
+Updated 27 October 2026. All screenshots are in `docs/screenshots/`.
 
 **Source column:**
 - **Me:** screenshot I took myself during development and manual testing.
@@ -23,11 +23,11 @@ Figure numbers refer to `DOCUMENTATION.md` and `docs/FlightScope_Documentation.p
 | Conclusion: achieved, learned, what could be improved | Conclusion | ✅ Fully met |
 | Reverse Engineer steps 1–6 (look, ask, inputs, process, sketch, build) | Phase 1, section 1.1 | ✅ Fully met |
 | Video at least 4 minutes | Video 4:29 | ✅ Fully met |
-| Video: purpose, the three phases, problems and solutions, examples | Video | ⚠️ Partially met (reverse engineering and the sample are not mentioned; problems are only partly covered) |
-| Video: clear sound, readable screen | Video | ✅ Mostly met (a few small, low-resolution browser captures) |
-| Video: "Use screen recording to show your work" | Video | ⚠️ Partially met (slideshow of real screenshots, no live screen recording) |
+| Video: purpose, the three phases, problems and solutions, examples | Video | ⚠️ Examples are shown on screen. The narration was not checked for these topics; confirm by listening |
+| Video: clear sound, readable screen | Video | ⚠️ Screen is readable in 1080p. Sound quality must be confirmed by listening |
+| Video: "Use screen recording to show your work" | Video | ✅ Met: the final video is a screen recording of the running application, Visual Studio Code, the terminal and GitHub |
 | GitHub: repository created, git init/add/commit/remote/push | GitHub repository | ✅ Fully met |
-| GitHub: latest changes pushed | GitHub repository | ⚠️ The new documentation and PDF are committed locally, waiting for your approval to push |
+| GitHub: repository updated with the documentation and PDF | GitHub repository | ✅ The repository already contains `docs/FlightScope_Documentation.pdf` (commit `df4b188`). Corrections listed in the change summary still need approval and a push |
 
 ## 2. Screenshots
 

@@ -1,5 +1,7 @@
 # Demonstration video: storyboard and narration
 
+> **Note (27 October 2026):** This storyboard was written as a plan before the final recording. The final video, `FlightScope_Final_Presentation.mp4` (4 minutes 29 seconds), was made separately, and its narration may differ from the text below. This file is kept as a record of the plan.
+
 **Target length:** 4:30–4:50 (the minimum is 4:00)
 **Narration:** about 690 words in simple English
 **Visuals:** your real screenshots from `docs/screenshots/`, plus two short live screen recordings of the app (≈ 30–40 s each)
@@ -40,9 +42,9 @@ Clipchamp is free and already installed on Windows 11 (Start menu → "Clipchamp
 
 ## Scene 1: Introduction (0:00–0:25)
 
-**Visual:** `07-dashboard-dark.png`. Add the title text "FlightScope – Saiedeh Babaki".
+**Visual:** `07-dashboard-dark.png`. Add the title text "FlightScope – Saiedeh Mangolian Shahrbabaki (Neda)".
 
-> Hi, my name is Saiedeh Babaki. This is FlightScope, my project for the reverse engineering assignment. FlightScope is a web application that shows departures and arrivals for Swedavia's ten Swedish airports. I built it with Python and Flask for the backend, and HTML, CSS and JavaScript for the web page.
+> Hi, my name is Saiedeh Mangolian Shahrbabaki, Neda. This is FlightScope, my project for the reverse engineering assignment. FlightScope is a web application that shows departures and arrivals for Swedavia's ten Swedish airports. I built it with Python and Flask for the backend, and HTML, CSS and JavaScript for the web page.
 
 ## Scene 2: Research (0:25–1:20)
 

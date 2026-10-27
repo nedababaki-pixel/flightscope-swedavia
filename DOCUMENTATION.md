@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Assignment** | APL project 2026, Task 4: *Reverse Engineer a Result* |
-| **Student** | Saiedeh Babaki |
+| **Student** | Saiedeh Mangolian Shahrbabaki (Neda) |
 | **Teacher** | Najmaddin |
 | **Date** | October 2026 |
 | **GitHub** | <https://github.com/nedababaki-pixel/flightscope-swedavia> |
@@ -19,7 +19,7 @@ The task was to look at a finished application and work out how it was built, th
 I built **FlightScope**, a web dashboard for departures and arrivals at Swedavia's ten Swedish airports. You can choose an airport, flight type and date, search for a flight and filter by status.
 
 - **Demo Mode works.** It uses clearly labelled example flights and needs no API key.
-- **Live Mode is built but has not been tested with a real key.** It connects to the official Swedavia FlightInfo API v2, but I do not have a subscription key yet.
+- **Live Mode is built but has not been tested with a real key.** It is written against the Swedavia FlightInfo API v2 address and field names described in the guide I read (section 1.2). I do not have a subscription key yet, so Live Mode has not been checked against real flight data.
 
 **How to read "who did what":** in this document, **"I"** means work I did myself. **"AI-assisted"** means work where Claude suggested or wrote changes. I reviewed those changes, ran the application and tested it myself.
 
@@ -76,15 +76,17 @@ def get_flights(airport, direction, date):
 I used several sources and also tested things in practice:
 
 1. **Setting up my tools.** I created the project folder and an empty `app.py` in VS Code (Figure 1). I checked that Python works (Figure 2) and installed the `requests` library (Figure 3).
-2. **Testing the website directly.** I wrote a small script that downloads `www.swedavia.se`. The server answered **HTTP 403 Forbidden** (Figure 4). The public website blocks scripts, so it cannot be used as a data source.
-3. **Finding the official API.** On Swedavia's developer portal I found the **FlightInfo API v2** and its official guide, *Using the FlightInfo API V2* (Figure 5). From the guide I learned:
-   - the address format: `https://api.swedavia.se/flightinfo/v2/{airport}/{arrivals or departures}/{date}`
-   - the key is sent in the header `Ocp-Apim-Subscription-Key`
-   - data is available from 7 days back to 90 days ahead
-   - all times are in UTC
-   - status and gate are inside a section called `locationAndStatus`
-   - the ten airport codes: ARN, BMA, GOT, MMX, LLA, UME, OSD, VBY, RNB, KRN
-4. **Testing the API without a key (AI-assisted check).** The API answered **401: "Access denied due to missing subscription key"** (Figure 6). This confirmed that the address is correct and that a key is required.
+2. **Testing the website directly.** I wrote a small script that downloads `www.swedavia.se`. The server answered **HTTP 403 Forbidden** (Figure 4). I did not find out why. A web page is not an API, so I did not use it as a data source.
+3. **Finding the official API.** On Swedavia's developer portal I found the **FlightInfo API v2** and its guide, *Using the FlightInfo API V2* (Figure 5). The guide is not included in this repository. The items below are what I took from the guide as I read it. My code uses them, but **none of them has yet been confirmed with a real API response.**
+   - Address pattern: `https://api.swedavia.se/flightinfo/v2/{airport}/{arrivals or departures}/{date}`
+   - Key header: `Ocp-Apim-Subscription-Key`
+   - Data window: 7 days back to 90 days ahead
+   - Times: UTC
+   - Status and gate: inside a section called `locationAndStatus`
+   - Airport codes used: ARN, BMA, GOT, MMX, LLA, UME, OSD, VBY, RNB, KRN
+
+   **Open point.** A different Swedavia guide, *Using the operational flightInfo API* (version 1, address `…/FlightInfoOperationalPax/v1/flights/…`, with field names such as `Flights` and `FlightId`), uses other names. I have not yet confirmed which of the two guides describes the subscription I will use. This is the first thing to check once I have a real key.
+4. **Testing the API without a key (AI-assisted check).** The API answered **401: "Access denied due to missing subscription key"** (Figure 6). This shows that the gateway requires a subscription key. It does not by itself prove that the address is correct.
 
 <img src="docs/screenshots/00a-project-start.png" alt="Empty app.py in VS Code" width="370"> <img src="docs/screenshots/00b-python-working.png" alt="First Python test" width="370">
 
@@ -154,6 +156,8 @@ My first working version had:
 - five basic automated tests
 - `.gitignore` and `.env.example`, so the key is never shared
 
+This first version is kept on my computer, in my project archive. The public GitHub history starts with a later version that already had the module structure described in section 2.3, so the first version is not visible in the repository history.
+
 ### 2.3 Improving the structure (AI-assisted)
 
 I asked Claude to review the whole project as a senior developer, using a prompt I wrote (`CLAUDE_PROMPT.md`, kept on my computer). The review led to a cleaner structure where every file has one job:
@@ -183,8 +187,8 @@ The browser never talks to Swedavia directly. Only the server knows the API key.
 ### 2.4 How the features were developed
 
 - **Reading the API data (AI-assisted).** `normalize_flight` turns each flight from the API into a simple format: flight number, airline, city, times, terminal, gate and status. UTC times become Swedish time (Figure 7).
-- **Status rules (AI-assisted).** Each flight gets one status: scheduled, delayed (15 minutes or more), boarding, departed, landed, cancelled or diverted. The status decides the colour and the filter.
-- **Demo Mode (my idea, improved with AI).** Demo flights are now created separately for every airport, flight type and date, in the same format as the real API. Demo Mode therefore runs the same code as Live Mode.
+- **Status rules (AI-assisted).** Each flight gets one status: scheduled, delayed (estimated 15 minutes or more late), boarding, departed, landed, cancelled or diverted. The status decides the colour and the filter.
+- **Demo Mode (my idea, improved with AI).** Demo flights are now created separately for every airport, flight type and date, in the same format as the real API. Demo data is converted by the same normalisation function (`normalize_payload`) as live data.
 - **Web page (AI-assisted, tested by me).**
   - airport list with all ten airports
   - departures/arrivals switch
@@ -198,7 +202,7 @@ The browser never talks to Swedavia directly. Only the server knows the API key.
 
 <img src="docs/screenshots/05-code-client.jpg" alt="normalize_flight function and project file list" width="760">
 
-*Figure 7: `normalize_flight` in `swedavia_client.py` reads status and gate from `locationAndStatus`, as the official guide describes. The file list on the left shows the project structure. Captured with the AI assistant's built-in browser (GitHub view).*
+*Figure 7: `normalize_flight` in `swedavia_client.py` reads status and gate from `locationAndStatus`, as described in the guide (section 1.2; not yet confirmed with a real response). The file list on the left shows the project structure. Captured with the AI assistant's built-in browser (GitHub view).*
 
 <img src="docs/screenshots/06-server-running.png" alt="FlightScope server started with run.bat" width="760">
 
@@ -212,7 +216,7 @@ The browser never talks to Swedavia directly. Only the server knows the API key.
 
 | Problem | Solution |
 |---|---|
-| **The technique did not work as planned:** my first version read status and gate from the wrong fields. | The AI review compared the code with the official API guide and found the correct fields in `locationAndStatus`. The code was rewritten and tests were added. *(AI-assisted.)* |
+| **The technique did not work as planned:** my first version read status and gate from the wrong fields. | An AI-assisted review changed the status and gate fields to `locationAndStatus`, following the guide I read (section 1.2). Tests were added. The change has not yet been checked against live data. *(AI-assisted.)* |
 | **The code became hard to manage:** everything was in one file. | The code was split into modules with one job each (section 2.3). *(AI-assisted.)* |
 | **Unexpected results:** Demo Mode showed the same six flights for every airport and date. | Demo flights are now created per airport, flight type and date. *(AI-assisted.)* |
 | On Windows the app **crashed at start-up** with `No time zone found with key Europe/Stockholm`. | The `tzdata` package was added to `requirements.txt`. *(Found and fixed with AI assistance while testing on my laptop.)* |
@@ -240,7 +244,7 @@ python -m unittest discover -s tests -v
 | Live Mode with **fake** API answers | Missing key, correct address and header, wrong key (401/403), no data (404), too many requests (429), server error, timeout, broken data |
 | Repository safety | `.env` is ignored by Git; `.env.example` contains no key |
 
-**Important:** the Live Mode tests use **fake** API answers. They show that the code handles the documented format and all error cases. They do **not** prove that Live Mode works with real Swedavia data.
+**Important:** the Live Mode tests use **fake** API answers. They show that the code handles the format described in the guide and the error cases listed above. They do **not** prove that Live Mode works with real Swedavia data.
 
 <img src="docs/screenshots/12-tests-ok.png" alt="Automated tests passing in the VS Code terminal" width="760">
 
@@ -251,25 +255,30 @@ python -m unittest discover -s tests -v
 **Tested by me on my Windows laptop:**
 
 - [x] The application starts with `run.bat` and runs (Figure 8)
-- [x] Choosing a different airport loads that airport's flights
+- [x] Choosing a different airport loads that airport's flights (shown in the presentation video)
 - [x] Arrivals view: the heading, the "From" column and the baggage belt column change (Figure 11)
 - [x] Dark mode (Figure 9) and light theme (Figure 14)
 - [x] Searching for flight **SK123** gave exactly one result (Kiruna arrivals, 26 October 2026) (Figure 12)
 - [x] Statuses, delays and cancellations are shown in the table (Figure 13)
 
-**AI-assisted checks** (done by the AI assistant in its browser and terminal):
+**Checks with screenshot evidence** (AI-assisted):
 
-- [x] `run.bat` on a clean installation creates the virtual environment and installs the packages
-- [x] Searching for a city ("copen" shows only Copenhagen flights)
-- [x] Status filter buttons show the right numbers
 - [x] Live API without a key shows a clear message and a "Try again" button instead of crashing (Figure 15)
 - [x] Phone size (375 px): the table becomes cards, with no sideways scrolling (Figure 16)
 - [x] An invalid airport (`airport=XXX`) gives a clear error (Figure 17)
+
+**Planned, no evidence yet** (not counted as tested):
+
+- [ ] `run.bat` on a clean installation (new virtual environment)
+- [ ] Fresh Windows installation after the `tzdata` fix
+- [ ] Searching for a city (for example "copen")
+- [ ] Status filter buttons show the correct counts
 
 **Not tested yet:**
 
 - [ ] **Live Mode with a real API key.** I do not have a subscription key, so Live Mode has **not** been tested with real flight data.
 - [ ] Using the whole page with only the keyboard
+- [ ] Using the page with a screen reader
 
 <img src="docs/screenshots/08-arrivals.png" alt="Luleå arrivals" width="760">
 
@@ -307,17 +316,17 @@ These improvements came from the AI-assisted review. I reviewed and tested them:
   - the API key is only used on the server;
   - all input is checked against fixed lists;
   - security headers are set;
-  - API text is shown as plain text, which prevents cross-site scripting;
-  - the server only runs on my own computer, with debug mode off.
+  - API text is inserted with `textContent`, not `innerHTML`, which reduces the risk of cross-site scripting;
+  - the server listens only on `127.0.0.1` (this computer), with debug mode off.
 - **Reliability:** clear messages for every API error, a 15-second timeout, and a 60-second cache so the API is not called on every click.
-- **Accessibility:** labels on all controls, keyboard support (`/` jumps to search), screen-reader announcements, and status shown with both text and colour.
-- **Usability:** a phone layout, dark and light themes, shareable links, and automatic refresh every two minutes.
+- **Accessibility:** labels on all controls, keyboard shortcut `/` to jump to search, an `aria-live` status region for announcements (not yet tested with a screen reader), and status shown with both text and colour.
+- **Usability:** a phone layout, dark and light themes, shareable links (the airport, date, mode, search and filter are kept in the address bar), and automatic refresh every two minutes while the page is visible.
 
 ### 3.4 Publishing on GitHub
 
 The project is published at <https://github.com/nedababaki-pixel/flightscope-swedavia> (Figure 18). The steps match the teacher's guide: `git init` (with `main` as the branch name), `git add`, `git commit`, `git remote add origin` and `git push -u origin main`. Later changes were published with `git add`, `git commit` and `git push`.
 
-Before publishing, we checked that:
+Before publishing, I checked that:
 
 - no passwords, API keys or `.env` file are included, and `.gitignore` excludes them (Figure 19);
 - the virtual environment (`.venv`) and temporary Python files are not uploaded;
@@ -335,15 +344,15 @@ I signed in to GitHub and approved each publishing step myself. The AI assistant
 
 ### 3.5 Presentation
 
-I made a 4 minute 29 second presentation video in English. It shows the project screenshots in order and has an AI-generated English voice-over. It explains the research, implementation, testing and publishing.
+I made a presentation video of 4 minutes 29 seconds in English (`FlightScope_Final_Presentation.mp4`, 1920×1080). The screen recording shows the application (airport and date selection, arrivals, search, dark and light themes), the Swedavia developer portal and the 401 response, the code in Visual Studio Code, the automated test output (28 tests, 27 passed, 1 skipped) and the public GitHub repository. The voice-over is an AI-generated English narration. It covers the project's purpose, the development process, the documentation and the results.
 
 ### 3.6 Problems and solutions in the completion phase
 
 | Problem | Solution |
 |---|---|
-| **It worked during development but not on my laptop:** the Windows time-zone crash (section 2.5). | The application was tested in my real Windows environment with a fresh virtual environment, and `tzdata` was added. *(AI-assisted.)* |
-| **Small bugs left at the end:** in the final check, some image descriptions in this document contained quotation marks, which could break how GitHub shows the images. | All image links were checked automatically and the descriptions were fixed before publishing. *(AI-assisted.)* |
-| My **personal email** could become public in the Git history. | Email privacy is turned on in my GitHub account, and this project uses my noreply address. *(AI-assisted; I confirmed the settings in my account.)* |
+| **It worked during development but not on my laptop:** the Windows time-zone crash (section 2.5). | The `tzdata` package was added to `requirements.txt`. A re-test on a fresh Windows environment is listed as not yet documented in section 3.2. *(AI-assisted.)* |
+| **Small bugs left at the end:** in the final check, some image descriptions in this document contained quotation marks, which could break how GitHub shows the images. | The image descriptions were corrected before publishing. *(AI-assisted.)* |
+| My **personal email** could become public in the Git history. | The commits in this repository use the GitHub noreply address (checked in the repository history). *(AI-assisted.)* |
 
 ---
 
@@ -351,12 +360,12 @@ I made a 4 minute 29 second presentation video in English. It shows the project 
 
 | # | Problem | Cause | Solution | Who solved it |
 |---|---|---|---|---|
-| 1 | Downloading `www.swedavia.se` returned **HTTP 403 Forbidden** (Figure 4) | The website blocks scripts; it is not an API | Used the official FlightInfo API v2 instead (Figures 5–6) | **Me** |
+| 1 | Downloading `www.swedavia.se` returned **HTTP 403 Forbidden** (Figure 4) | The website returned 403 to a script; the cause was not determined. It is a web page, not an API | Used the official FlightInfo API v2 instead (Figures 5–6) | **Me** |
 | 2 | **No API key** for live data | Live data needs a personal subscription | Built a clearly labelled Demo Mode. Live Mode is tested with fake API answers and shows a clear message when no key exists (Figure 15) | **Me** (Demo Mode idea and first version); **AI-assisted** (improved demo data, tests) |
-| 3 | **Wrong API field mapping:** status and gate were read from the wrong place | The first version was based on guesses, not on the documentation | Compared the code with the official API guide; now reads `locationAndStatus` (Figure 7); tests added | **AI-assisted**, checked and tested by me |
+| 3 | **Wrong API field mapping:** status and gate were read from the wrong place | The first version was based on guesses, not on the documentation | Compared the code with the API guide (section 1.2); now reads `locationAndStatus` (Figure 7); tests added. Not yet checked against live data | **AI-assisted**, checked and tested by me |
 | 4 | **Windows time-zone crash:** `No time zone found with key Europe/Stockholm` | Windows does not include the time-zone database that Python needs | Added the `tzdata` package to `requirements.txt` | **AI-assisted**, while testing on my laptop |
 | 5 | **Same demo flights** for every airport and date | The demo data ignored the user's choices | Demo flights created per airport, direction and date | **AI-assisted** |
-| 6 | **GitHub privacy:** my personal email could be published | Git saves the author's email in every commit | Email privacy turned on; commits use my GitHub noreply address | **AI-assisted**, settings confirmed by me |
+| 6 | **GitHub privacy:** my personal email could be published | Git saves the author's email in every commit | Commits use my GitHub noreply address (see the repository history) | **AI-assisted**, settings confirmed by me |
 | 7 | Changes to the HTML did not appear while the server was running | Flask keeps the page in memory when debug mode is off | Restart the server after changing the page (written in the README) | **AI-assisted** |
 
 ---
@@ -365,7 +374,7 @@ I made a 4 minute 29 second presentation video in English. It shows the project 
 
 ### What I achieved
 
-I recreated a flight information application by working backwards from a sample, following the steps of the assignment: look, ask questions, guess the inputs, guess the process, sketch the steps, and build it. The result, FlightScope, is a working dashboard for all ten Swedavia airports with search, filters, status colours, dark and light themes, and a phone layout. It is tested with 28 automated tests and published on GitHub.
+I recreated a flight information application by working backwards from a sample, following the steps of the assignment: look, ask questions, guess the inputs, guess the process, sketch the steps, and build it. The result, FlightScope, is a working dashboard for all ten Swedavia airports with search, filters, status colours, dark and light themes, and a phone layout. It has 28 automated tests (27 pass; 1 is skipped when no API key is configured) and is published on GitHub.
 
 **Demo Mode works.** **Live Mode has not been tested with a real subscription key.**
 
@@ -389,13 +398,13 @@ I recreated a flight information application by working backwards from a sample,
 
 - My first version guessed the API fields instead of checking the documentation. This had to be fixed later.
 - Live Mode has **not** been tested with real data, because I do not have a subscription key.
-- The API expects the date in UTC, so flights just after midnight Swedish time may appear under the previous day.
+- According to the guide as I read it, the API expects the date in UTC, so flights just after midnight Swedish time may appear under the previous day. This has not yet been tested with live data.
 - A large part of the improvements were made with AI assistance. I reviewed and tested them, but I did not write every line myself.
 - Keyboard-only use has not been tested by me.
 
 ### What I could improve in the future
 
-1. Register for a Swedavia API key and test Live Mode with real flight data.
+1. Register for a Swedavia API key, confirm the address, header and field names against the guide, and test Live Mode with a real response.
 2. Add a detail view for each flight and a Swedish language option.
 3. Test the page with a screen reader and with the keyboard only.
 4. Run the tests automatically on GitHub (GitHub Actions).
@@ -405,7 +414,8 @@ I recreated a flight information application by working backwards from a sample,
 ## References
 
 - Swedavia API developer portal: <https://apideveloper.swedavia.se/>
-- Swedavia, *Using the FlightInfo API V2* (PDF): <https://apideveloper.swedavia.se/content/Using_the_FlightInfo_API.pdf>
+- Swedavia, *Using the FlightInfo API V2* (guide used in section 1.2; not included in this repository): <https://apideveloper.swedavia.se/content/Using_the_FlightInfo_API.pdf>
+- Swedavia, *Using the operational flightInfo API* (version 1 guide, reviewed for the open point in section 1.2): <https://apideveloper.swedavia.se/content/Using_the_operational_flightInfo_API.pdf>
 - Flask documentation: <https://flask.palletsprojects.com/>
 - Requests documentation: <https://requests.readthedocs.io/>
 - Najmaddin, *Guide för dokumentation, videoinspelning samt GitHub* and *4. Reverse Engineer a Result*, APL project 2026

@@ -1,6 +1,6 @@
 # FlightScope: Swedish Airport Flight Information Dashboard
 
-A responsive flight information dashboard for Swedavia's ten Swedish airports, built with **Python, Flask, HTML, CSS and JavaScript**. I built it as a reverse-engineering school assignment and portfolio project. It recreates the idea of a Swedavia FlightInfo screen from a sample video and connects to the official **Swedavia FlightInfo API v2**.
+A responsive flight information dashboard for Swedavia's ten Swedish airports, built with **Python, Flask, HTML, CSS and JavaScript**. I built it as a reverse-engineering school assignment and portfolio project. It recreates the idea of a Swedavia FlightInfo screen from a sample video. Live mode is written against the **Swedavia FlightInfo API v2** described in Swedavia's guide; it has not yet been tested with a real subscription key.
 
 > **Unofficial project.** Not affiliated with or endorsed by Swedavia. Demo mode shows generated example flights that are clearly labelled and are not real flight information.
 
@@ -18,13 +18,13 @@ More screenshots, with captions, are in [DOCUMENTATION.md](DOCUMENTATION.md) (al
 ## Features
 
 - **All ten Swedavia airports:** Arlanda, Bromma, Landvetter, Malmö, Luleå, Umeå, Åre Östersund, Visby, Ronneby and Kiruna.
-- **Departures and arrivals**, for any date from 7 days back to 90 days ahead. This is the window the API supports.
+- **Departures and arrivals**, for any date from 7 days back to 90 days ahead. This is the window described in Swedavia's guide.
 - **Instant search** by flight number (e.g. `SK123`), airline, city, gate, codeshare or status. Press `/` to jump to the search box and `Esc` to clear it.
 - **Status filters** with live counts: Scheduled, Delayed, Boarding, Departed/Landed and Cancelled.
 - **Summary cards:** total flights, on time, delayed, cancelled/diverted, and last update.
 - **Changed times:** the old time is struck through and the new time is highlighted. The table also shows terminal, gate, check-in desks (departures) or baggage belt (arrivals), codeshares and remarks.
 - **Demo mode** works offline with no API key. Generated data is fixed for each airport and date, and statuses follow the real clock.
-- **Live mode** uses the official FlightInfo API v2, with a 60-second server-side cache.
+- **Live mode** calls the FlightInfo API v2 address described in Swedavia's guide (not yet tested with a real key), with a 60-second server-side cache.
 - **Responsive design:** a table on desktop and cards on phones. Dark and light themes, with your choice remembered.
 - **Accessibility:** skip link, labelled controls, native radio groups, `aria-pressed` filter buttons, an `aria-live` status region, a table caption, visible focus rings, and support for reduced motion.
 - **Shareable URLs:** airport, date, mode, search and filter are kept in the address bar.
@@ -60,7 +60,7 @@ Requirements: Python 3.10 or newer. Tested with Python 3.14 on Windows 11.
 
 ### How the integration works
 
-These details are verified against Swedavia's official guide, *Using the FlightInfo API V2* (model version 2.0.0):
+These details come from Swedavia's guide, *Using the FlightInfo API V2*, as I read it. The guide is not included in this repository. **None of them has yet been confirmed with a real API response.** The code uses these values:
 
 | Item | Value |
 |---|---|
@@ -72,7 +72,9 @@ These details are verified against Swedavia's official guide, *Using the FlightI
 | Gate / terminal | `locationAndStatus.gate`, `locationAndStatus.terminal` |
 | Boarding | `locationAndStatus.gateAction` = `O` (gate open) |
 
-A request without a key returns `401 Access denied due to missing subscription key`, which confirms that the endpoint exists. **Live data with a real key has not been tested yet**, because no subscription key was available during development. The parser is covered by tests that use payloads shaped like the official model.
+A request without a key returns `401 Access denied due to missing subscription key`. This shows that the gateway requires a key; it does not by itself prove that the address is correct. **Live data with a real key has not been tested yet**, because no subscription key was available during development. The parser is covered by tests that use fake payloads written to match the format in the guide. These are test fixtures, not live responses.
+
+An open point: a different Swedavia guide, *Using the operational flightInfo API* (version 1), uses other addresses and field names. Which guide matches the subscription used by FlightScope is still to be confirmed with a real key.
 
 ## Running the tests
 
@@ -87,7 +89,7 @@ There are 28 tests covering pages, security headers, input validation, demo mode
 ```
 app.py                Flask routes, validation, security headers, error handling
 swedavia_client.py    FlightInfo API v2 client, response normalizer, status rules, cache
-demo_data.py          Generated demo flights in the official API format
+demo_data.py          Generated demo flights in the same format as the API response
 templates/index.html  Dashboard markup (semantic, accessible)
 static/style.css      Responsive design, dark and light themes
 static/app.js         Data loading, search, filters, rendering, URL state
@@ -106,7 +108,7 @@ docs/                 GitHub guide, screenshot checklist, video script
 - Every input (airport, direction, date, mode) is checked against an allow-list before it is used in the API URL.
 - Upstream errors become short, safe messages. No stack traces or internal details are sent to users.
 - A Content Security Policy (no inline scripts), `X-Frame-Options: DENY`, `nosniff` and `no-referrer` headers are set on every response.
-- The frontend inserts API text with `textContent`, never `innerHTML`, which prevents XSS.
+- The frontend inserts API text with `textContent`, never `innerHTML`, which reduces the risk of cross-site scripting.
 - The app listens on `127.0.0.1` only and runs with Flask debug mode off.
 
 ## Troubleshooting
@@ -122,10 +124,10 @@ docs/                 GitHub guide, screenshot checklist, video script
 ## Limitations and next steps
 
 - Live mode still needs to be tested with a real subscription key.
-- The API expects the date in UTC. Flights just after midnight in Swedish time may appear under the previous UTC day.
+- According to the guide, the API expects the date in UTC. Flights just after midnight in Swedish time may appear under the previous UTC day. Not yet tested with live data.
 - Flask's built-in server is for local use. A public deployment would need a production server such as waitress or gunicorn, plus HTTPS.
 - Possible improvements: flight detail panel, Swedish language toggle, and the `/query` endpoint with continuation tokens for efficient updates.
 
 ## Credits
 
-Flight data © Swedavia, through the public FlightInfo API. Built by Saiedeh Babaki as part of an IT education assignment.
+Flight data © Swedavia, through the public FlightInfo API. Built by Saiedeh Mangolian Shahrbabaki (Neda) as part of an IT education assignment.
